@@ -20,6 +20,89 @@ algolia:
   index_name:     slim-docs
   nodes_to_index: 'h1,h2,h3,p,ul.toc-links.li'
 defaults:
+
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      docs-v5:
+        - title: Get Started
+          items:
+            - [/docs/v5, Home]
+            - [/docs/v5/start/installation.md, Installation]
+            - [/docs/v5/start/web-servers.md, Web Servers]
+            - [/docs/v5/deployment/deployment.md, Deployment]
+            - [/docs/v5/start/upgrade.md, Upgrade Guide]
+        - title: Concepts
+          items:
+            - [/docs/v5/concepts/life-cycle.md, Application Life Cycle]
+            - [/docs/v5/concepts/value-objects.md, PSR-7]
+            - [/docs/v5/concepts/middleware.md, Middleware]
+            - [/docs/v5/concepts/di.md, Dependency Container]
+        - title: The Application
+          items:
+            - [/docs/v5/objects/application.md, Overview]
+            - [/docs/v5/objects/application.md#advanced-notices-and-warnings-handling, Notices & Warnings Handling]
+        - title: The Request
+          items:
+            - [/docs/v5/objects/request.md, Overview]
+            - [/docs/v5/objects/request.md#the-request-method, Method]
+            - [/docs/v5/objects/request.md#the-request-headers, Headers]
+            - [/docs/v5/objects/request.md#the-request-body, Body]
+            - [/docs/v5/objects/request.md#uploaded-files, Uploaded Files]
+            - [/docs/v5/objects/request.md#request-helpers, Helpers]
+            - [/docs/v5/objects/request.md#route-object, Route object]
+        - title: The Response
+          items:
+            - [/docs/v5/objects/response.md, Overview]
+            - [/docs/v5/objects/response.md#the-response-status, Status]
+            - [/docs/v5/objects/response.md#the-response-headers, Headers]
+            - [/docs/v5/objects/response.md#the-response-body, Body]
+            - [/docs/v5/objects/response.md#returning-json, JSON]
+        - title: Routing
+          items:
+            - [/docs/v5/objects/routing.md, Overview]
+            - [/docs/v5/objects/routing.md#how-to-create-routes, Create Routes]
+            - [/docs/v5/objects/routing.md#route-callbacks, Callbacks]
+            - [/docs/v5/objects/routing.md#route-strategies, Strategies]
+            - [/docs/v5/objects/routing.md#route-placeholders, Placeholders]
+            - [/docs/v5/objects/routing.md#route-names, Names]
+            - [/docs/v5/objects/routing.md#route-groups, Groups]
+            - [/docs/v5/objects/routing.md#route-middleware, Middleware]
+            - [/docs/v5/objects/routing.md#route-expressions-caching, Caching]
+            - [/docs/v5/objects/routing.md#container-resolution, Container Resolution]
+        - title: Packaged Middleware
+          items:
+            - [/docs/v5/middleware/routing.md, Routing]
+            - [/docs/v5/middleware/error-handling.md, Error Handling]
+            - [/docs/v5/middleware/method-overriding.md, Method Overriding]
+            - [/docs/v5/middleware/output-buffering.md, Output Buffering]
+            - [/docs/v5/middleware/body-parsing.md, Body Parsing]
+            - [/docs/v5/middleware/content-length.md, Content Length]
+        - title: Cook book
+          items:
+            - [/docs/v5/cookbook/route-patterns.md, Trailing / in routes]
+            - [/docs/v5/cookbook/retrieving-current-route.md, Retrieving Current Route]
+            - [/docs/v5/cookbook/database-doctrine.md, Using Doctrine with Slim]
+            - [/docs/v5/cookbook/enable-cors.md, Enabling CORS]
+            - [/docs/v5/cookbook/uploading-files.md, Uploading Files using POST forms]
+        - title: Add Ons
+          items:
+            - [/docs/v5/features/templates.md, Templates]
+            - [/docs/v5/features/twig-view.md, Twig Templates]
+            - [/docs/v5/features/php-view.md, PHP Templates]
+        - title: Contributing
+          items:
+            - [/docs/v5/contributors/strategy.md, Branching Strategy]
+            - [/docs/v5/contributors/guidelines.md, Guidelines]
+
+  - scope:
+      path: "docs/v5"
+      type: "pages"
+    values:
+      layout: docs-v5
+
   -
     scope:
       path: ""
