@@ -72,7 +72,6 @@ Set up a basic Slim app by creating a file named `public/index.php` with the fol
 
 use Slim\Builder\AppBuilder;
 use Slim\Middleware\BodyParsingMiddleware;
-use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
 use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\Middleware\RoutingMiddleware;
