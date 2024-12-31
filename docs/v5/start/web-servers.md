@@ -7,19 +7,22 @@ The instructions below explain how to tell your web server to send HTTP requests
 
 ## PHP built-in server
 
-Run the following command in terminal to start localhost web server, assuming *./public/* is public-accessible directory with *index.php* file:
+To quickly run your Slim application locally for development or testing, 
+use PHP's built-in web server. Follow these steps:
+
+1. Navigate to the `public/` directory containing your index.php file.
+
+2. Start the web server with the following command:
 
 ```bash
-cd public/
 php -S localhost:8888
 ```
 
-If you are not using *index.php* as your entry point then change appropriately.
+If you are not using *index.php* as your entry point, update the command to reflect your entry file.
 
-> **Warning:** The built-in web server was designed to aid application development. 
-It may also be useful for testing purposes or for application demonstrations that are run in controlled environments. 
-It is not intended to be a full-featured web server. 
-It should not be used on a public network.
+> **Warning:** Warning: The built-in web server is intended for development 
+> and testing purposes only. Do not use it in a production environment or 
+> expose it to public networks as it lacks the necessary security features.
 
 ## Apache configuration
 
@@ -101,9 +104,10 @@ Here’s an example:
 use Slim\Middleware\BasePathMiddleware;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\RoutingMiddleware;
-// ...
 
+// ...
 $app->add(BasePathMiddleware::class);
+// ...
 $app->add(RoutingMiddleware::class);
 $app->add(EndpointMiddleware::class);
 // ...
@@ -132,7 +136,7 @@ This is an example Nginx virtual host configuration for the domain `example.com`
 It listens for inbound HTTP connections on port 80. It assumes a PHP-FPM server is running on port 9123. You should update the `server_name`, `error_log`, `access_log`, and `root` directives with your own values. 
 The `root` directive is the path to your application's public document root directory; your Slim app's `index.php` front-controller file should be in this directory.
 
-```bash
+```
 server {
     listen 80;
     server_name example.com;
@@ -159,37 +163,55 @@ server {
 
 ## Caddy
 
-The Caddy configuration is located in `/etc/caddy/Caddyfile`. Caddy requires `php-fpm` and have the FPM server running.
-Assuming the FPM socket is at `/var/run/php/php-fpm.sock`, and your application is located in `/var/www`, the following configuration should work out of the box.
+To run a Slim application on Caddy, ensure that you have php-fpm installed and running. 
+The Caddy configuration file, typically located at `/etc/caddy/Caddyfile`, 
+should contain the following:
 
 ### HTTP configuration listening for any request
 
-```bash
+```
 :80 {
-        # Set-up the FCGI location
-        php_fastcgi unix//var/run/php/php-fpm.sock
         # Set this path to your site's directory.
         root * /var/www/public
+        # Set-up the FCGI location
+        php_fastcgi unix//var/run/php/php-fpm.sock
+        # Enables static file serving
+        file_server
+        # Redirects all requests to index.php unless the requested file exists
+        rewrite {
+            if {file} not file
+            to /index.php{uri}
+        }
 }
 ```
 
 ### HTTPS configuration with self-signed certificate
 
-```bash
+```
 :443 {
         tls internal
-        # Set-up the FCGI location
-        php_fastcgi unix//var/run/php/php-fpm.sock
         # Set this path to your site's directory.
         root * /var/www/public
+        # Set-up the FCGI location
+        php_fastcgi unix//var/run/php/php-fpm.sock
+        # Enables static file serving
+        file_server
+        # Redirects all requests to index.php unless the requested file exists
+        rewrite {
+            if {file} not file
+            to /index.php{uri}
+        }
 }
 ```
 
 ## IIS
 
-Ensure the `Web.config` and `index.php` files are in the same public-accessible directory. The `Web.config` file should contain this code:
+To run a Slim application on IIS, ensure the `Web.config` and `index.php`
+files are in the same publicly accessible directory. 
 
-```bash
+The `Web.config` file should contain the following:
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <system.webServer>
@@ -209,32 +231,14 @@ Ensure the `Web.config` and `index.php` files are in the same public-accessible 
 </configuration>
 ```
 
-## lighttpd
+## Lighttpd
 
-Your lighttpd configuration file should contain this code (along with other settings you may need). This code requires lighttpd >= 1.4.24.
+To run a Slim application on Lighttpd, update your configuration file as follows (requires Lighttpd version 1.4.24 or newer):
 
-```bash
+```
 url.rewrite-if-not-file = ("(.*)" => "/index.php/$0")
 ```
 
-This assumes that Slim's `index.php` is in the root folder of your project (www root).
-
-## Run From a Sub-Directory
-
-If you want to run your Slim Application from a sub-directory in your Server's Root instead of creating a Virtual Host, you can configure `$app->setBasePath('/path-to-your-app');` right after the `AppFactory::create();`.
-Assuming that your Server's Root is `/var/www/html/` and path to your Slim Application is `/var/www/html/my-slim-app` you can set the base path to `$app->setBasePath('/my-slim-app');`.
-
-```php
-<?php
-
-use Slim\Factory\AppFactory;
-// ...
-
-$app = AppFactory::create();
-$app->setBasePath('/my-slim-app');
-
-// ...
-
-$app->run();
-```
-
+This assumes that the Slim `index.php` is in the root folder of your 
+project (the document root of the server). Ensure other necessary 
+Lighttpd settings are configured based on your environment.
