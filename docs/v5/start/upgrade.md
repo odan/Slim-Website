@@ -11,4 +11,4 @@ Slim 5 requires **PHP 8.2 or newer**.
 
 ## Breaking changes
 
-* TODO
+Work in progress
