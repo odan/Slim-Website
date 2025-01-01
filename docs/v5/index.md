@@ -58,9 +58,7 @@ use Slim\Middleware\RoutingMiddleware;
 require __DIR__ . '/../vendor/autoload.php';
 
 //  Instantiate App
-$app = AppFactory::create();
 $builder = new AppBuilder();
-
 $app = $builder->build();
 
 // Add middleware (First in, First out)
