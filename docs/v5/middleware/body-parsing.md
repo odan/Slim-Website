@@ -83,9 +83,63 @@ $app->post('/', function (ServerRequestInterface $request, ResponseInterface $re
 
 BodyParsingMiddleware detects and parses body content as follows:
 
-* Reads `Content-Type` from request headers.
+* Prioritizes, the `Accept` request header.
+* Fallback to `Content-Type` if `Accept` is empty or missing
 * Matches it with registered parsers.
-* Falls back to structured syntax suffixes (RFC 6839), e.g. +json
+
+**Important Note**
+
+Structured suffix media types (e.g. application/vnd.api+json) are not matched unless
+you manually register a handler for the specific type.
+
+## Registers standard handlers for these media types:
+
+The `withDefaultBodyParsers` method registers the standard handlers for all supported media types.
+
+```php
+$middleware = (new BodyParsingMiddleware($mediaTypeDetector))
+    ->withDefaultBodyParsers();
+```
+
+## Custom Media Types
+
+The `withBodyParser` method registers a custom parser for a given media type.
+
+**Example: Register a YAML body parser**
+
+This lets the middleware handle requests with Content-Type: `application/x-yaml`
+
+```php
+
+use Symfony\Component\Yaml\Yaml;
+// ...
+
+$middleware = (new BodyParsingMiddleware($mediaTypeDetector))
+    ->withBodyParser('application/x-yaml', function (string $input) {
+        return Yaml::parse($input);
+    });
+```
+
+**Example: Support structured media type**
+
+This allows clients to send content with Content-Type: `application/vnd.api+json` and have it parsed correctly.
+
+```php
+$middleware = (new BodyParsingMiddleware($mediaTypeDetector))
+    ->withBodyParser('application/vnd.api+json', function (string $input) {
+        $data = json_decode($input, true);
+        return is_array($data) ? $data : null;
+    });
+```
+
+Sets the media type to fall back to when no Content-Type or Accept header is provided.
+
+Example: Fallback to application/json
+
+```php
+$middleware = (new BodyParsingMiddleware($mediaTypeDetector))
+    ->withDefaultMediaType('application/json');
+```
 
 ## Supported media types
 
