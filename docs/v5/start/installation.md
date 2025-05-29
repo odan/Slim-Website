@@ -18,7 +18,7 @@ To install Slim, use Composer. Navigate to your project’s root directory
 and run the following command:
 
 ```bash
-composer require slim/slim:5.*
+composer require slim/slim:5.x-dev
 ```
 
 This will download Slim and its dependencies into the `vendor/` directory.
