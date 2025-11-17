@@ -2,9 +2,9 @@
 title: Middleware
 ---
 
-Middleware is a way to run code before and after your Slim app processes a request. 
-Think of it as a set of layers that wrap around your app, 
-giving you full control to modify requests and responses. 
+Middleware is a way to run code before and after your Slim app processes a request.
+Think of it as a set of layers that wrap around your app,
+giving you full control to modify requests and responses.
 
 This is handy for things like: Authentication, Authorization, Logging and Error handling.
 
@@ -29,9 +29,9 @@ The middleware that’s added first is the one that processes both the Request a
 
 ### Why FIFO?
 
-Using **FIFO** makes it super clear what’s happening. 
-The middleware runs in **the exact order you added it**, 
-for incoming requests. 
+Using **FIFO** makes it super clear what’s happening.
+The middleware runs in **the exact order you added it**,
+for incoming requests.
 
 This lets you manage tasks in logical steps:
 
@@ -41,13 +41,13 @@ This lets you manage tasks in logical steps:
 
 ## Adding middleware
 
-Adding middleware in Slim is super simple. You just stack it using the App `add()` or `addMiddleware()` method. 
+Adding middleware in Slim is super simple. You just stack it using the App `add()` or `addMiddleware()` method.
 
 ```php
 // Add middleware using the class syntax (for dependency injection)
 $app->add(ExampleMiddleware::class);
 
-// Add middleware by creating the object manually 
+// Add middleware by creating the object manually
 $app->add(new ExampleMiddleware());
 ```
 
@@ -68,7 +68,7 @@ $app->add(EndpointMiddleware::class); // Second layer
 
 $app->get('/', function ($request, $response) {
     $response->getBody()->write('Hello, World!');
-    
+
     return $response;
 });
 
@@ -85,7 +85,7 @@ $app->addMiddleware(new CsrfMiddleware());      // Third layer
 
 **Note:** It is recommended to use the `add()` method by default because of the DI container integration.
 
-Depending on your use case, you can attach middleware globally to the entire app, 
+Depending on your use case, you can attach middleware globally to the entire app,
 or locally to specific **routes** or **route groups**.
 
 ```php
@@ -95,7 +95,7 @@ $app->get('/', function (ServerRequestInterface $request, ResponseInterface $res
 })->add(ExampleMiddleware::class);
 
 // Add middleware to a route group using dependency injection
-$app->group('/api', function (RouteGroup $group) { 
+$app->group('/api', function (RouteGroup $group) {
     // Define routes here
 })->add(ExampleMiddleware::class);
 
@@ -103,7 +103,7 @@ $app->group('/api', function (RouteGroup $group) {
 
 ## Middleware execution order
 
-Slim processes middleware in a **First In, First Out (FIFO)** order. 
+Slim processes middleware in a **First In, First Out (FIFO)** order.
 
 This means the first middleware you add is the first to be executed for both requests and responses.
 
@@ -135,13 +135,13 @@ Middleware is essentially a callable that accepts two arguments:
 * A Request object: `ServerRequestInterface`
 * A RequestHandler object: `RequestHandlerInterface`.
 
-Every middleware **MUST** return an instance of `Psr\Http\Message\ResponseInterface`. 
+Every middleware **MUST** return an instance of `Psr\Http\Message\ResponseInterface`.
 This makes it compatible with the Slim middleware pipeline and **PSR-15** standards.
 
 **What is PSR-15 middleware?**
 
-[PSR-15](https://www.php-fig.org/psr/psr-15/) defines standard interfaces for handling HTTP requests and middleware. 
-Slim fully supports PSR-15 middleware, enabling smooth integration of both custom 
+[PSR-15](https://www.php-fig.org/psr/psr-15/) defines standard interfaces for handling HTTP requests and middleware.
+Slim fully supports PSR-15 middleware, enabling smooth integration of both custom
 and third-party components.
 
 ### Writing a Simple Middleware Class
@@ -184,7 +184,7 @@ In this example:
 
 ### Creating a new response in a Middleware
 
-To create a custom response, use the `ResponseFactoryInterface`, 
+To create a custom response, use the `ResponseFactoryInterface`,
 which provides the `createResponse()` method.
 
 Here is an example:
@@ -213,7 +213,7 @@ final class CustomResponseMiddleware implements MiddlewareInterface
         if (/* some condition */) {
             $response = $this->responseFactory->createResponse(403);
             $response->getBody()->write('Forbidden');
-            
+
             return $response;
         }
 
@@ -287,7 +287,7 @@ $app->add(function (ServerRequestInterface $request, RequestHandlerInterface $ha
         // Return a 401 Unauthorized response
         $response = $this->get(ResponseFactoryInterface::class)->createResponse();
         $response->getBody()->write('Unauthorized');
-        
+
         return $response;
     }
 
@@ -305,25 +305,27 @@ For anything more complex, it’s better to use a class.
 
 ### Route middleware
 
-Route middleware is invoked _only if_ its route matches the current HTTP request method and URI. 
-Route middleware is specified immediately after you invoke any of the Slim application's routing methods (e.g., **get()** or **post()**). 
-Each routing method returns an instance of **\Slim\Route**, and this class provides the same middleware interface as the Slim application instance. 
-Add middleware to a Route with the Route instance's **add()** method. 
+Route middleware is invoked _only if_ its route matches the current HTTP request method and URI.
+Route middleware is specified immediately after you invoke any of the Slim application's routing methods (e.g., **get()** or **post()**).
+Each routing method returns an instance of **\Slim\Route**, and this class provides the same middleware interface as the Slim application instance.
+Add middleware to a Route with the Route instance's **add()** method.
 This example adds the Closure middleware example above:
 
 ```php
 <?php
 
-use Slim\Builder\AppBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\Factory\AppFactory;
-
-// ...
+use Slim\Builder\AppBuilder;
+use Slim\Middleware\EndpointMiddleware;
+use Slim\Middleware\RoutingMiddleware;
 
 $builder = new AppBuilder();
 $app = $builder->build();
+
+$app->add(RoutingMiddleware::class);
+$app->add(EndpointMiddleware::class);
 
 $middleware = function (ServerRequestInterface $request, RequestHandler $handler) {
     $response = $handler->handle($request);
@@ -349,8 +351,8 @@ Hello World
 
 ### Group middleware
 
-Middleware can be applied not only to individual routes or the overall application 
-but also to **route groups**. This is useful when multiple routes share common logic, 
+Middleware can be applied not only to individual routes or the overall application
+but also to **route groups**. This is useful when multiple routes share common logic,
 like authentication or response formatting.
 
 Here is a sample application with middleware applied to a group of routes:
@@ -358,11 +360,11 @@ Here is a sample application with middleware applied to a group of routes:
 ```php
 <?php
 
-use Slim\Builder\AppBuilder;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Builder\AppBuilder;
 use Slim\Routing\RouteGroup;
 // ...
 
@@ -374,7 +376,7 @@ $app = $builder->build();
 // A basic root route
 $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
     $response->getBody()->write('Hello World');
-    
+
     return $response;
 });
 
@@ -382,13 +384,13 @@ $app->get('/', function (ServerRequestInterface $request, ResponseInterface $res
 $app->group('/utils', function (RouteGroup $group) {
     $group->get('/date', function (ServerRequestInterface $request, ResponseInterface $response) {
         $response->getBody()->write(date('Y-m-d H:i:s'));
-        
+
         return $response;
     });
-    
+
     $group->get('/time', function (ServerRequestInterface $request, ResponseInterface $response) {
         $response->getBody()->write((string)time());
-        
+
         return $response;
     });
 })->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
@@ -433,8 +435,8 @@ $app->group('/api', function (RouteGroup $group) {
 
 ### Passing variables from middleware
 
-The simplest way to pass data from middleware to a route is by using the request **attributes**. 
-These attributes allow you to attach custom data to the request, 
+The simplest way to pass data from middleware to a route is by using the request **attributes**.
+These attributes allow you to attach custom data to the request,
 making it accessible further down the pipeline.
 
 The easiest way to pass attributes from middleware is to use the request's attributes.
@@ -460,10 +462,10 @@ $foo = $request->getAttribute('foo');
 
 ## Finding available middleware
 
-Before writing your own, consider checking if a PSR-15 middleware class already exists 
-to meet your needs. Many commonly used middleware components are available online. 
+Before writing your own, consider checking if a PSR-15 middleware class already exists
+to meet your needs. Many commonly used middleware components are available online.
 
 Here are some resources to help you search:
 
 * [Github PSR-15: HTTP Server Request Handlers](https://github.com/topics/psr-15)
-* [middlewares/awesome-psr15-middlewares](https://github.com/middlewares/awesome-psr15-middlewares)~~
+* [middlewares/awesome-psr15-middlewares](https://github.com/middlewares/awesome-psr15-middlewares)
