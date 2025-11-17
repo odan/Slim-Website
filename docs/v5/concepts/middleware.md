@@ -6,18 +6,7 @@ Middleware is a way to run code before and after your Slim app processes a reque
 Think of it as a set of layers that wrap around your app, 
 giving you full control to modify requests and responses. 
 
-
-
-This is handy for things like:
-
-* **Authentication:** Validating user credentials.
-* **Authorization:** Enforcing permissions and access control.
-* **Logging:** Tracking HTTP activity for debugging or analytics.
-* **Request Modification:** Adding headers, parsing bodies, or altering input data.
-* **Response Transformation:** Modifying output formats or adding metadata.
-* **Error Handling:** Catching and managing exceptions globally.
-
-Middleware enables reusability and modularity, making it easier to handle cross-cutting concerns efficiently.
+This is handy for things like: Authentication, Authorization, Logging and Error handling.
 
 ## How middleware works
 
@@ -29,10 +18,10 @@ Slim 5 uses a **FIFO (First In, First Out)** approach for middleware. Here’s h
 
 * When a Request comes in, it passes through the middleware in the **same order they were added** (first one added, first to run).
 * Once the Request reaches the route handler (your core logic), the app processes it and generates a Response.
-* The Response travels back out through the middleware in the same order, getting modified or processed along the way.
+* The Response travels back out through the middleware in the reversed order, getting modified or processed along the way.
 
 ```
-Request  → [Middleware #1] → [Middleware #2] → [Your Core App]
+Request  → [Middleware #1] → [Middleware #2] → [Your Core App] ↓
 Response ← [Middleware #1] ← [Middleware #2] ←
 ```
 
@@ -42,7 +31,7 @@ The middleware that’s added first is the one that processes both the Request a
 
 Using **FIFO** makes it super clear what’s happening. 
 The middleware runs in **the exact order you added it**, 
-both for incoming requests and outgoing responses. 
+for incoming requests. 
 
 This lets you manage tasks in logical steps:
 
@@ -55,10 +44,10 @@ This lets you manage tasks in logical steps:
 Adding middleware in Slim is super simple. You just stack it using the App `add()` or `addMiddleware()` method. 
 
 ```php
-// Add middleware (globally) to the App using dependency injection
+// Add middleware using the class syntax (for dependency injection)
 $app->add(ExampleMiddleware::class);
 
-// Add middleware (globally) to the App
+// Add middleware by creating the object manually 
 $app->add(new ExampleMiddleware());
 ```
 
@@ -105,20 +94,10 @@ $app->get('/', function (ServerRequestInterface $request, ResponseInterface $res
     // Route logic here
 })->add(ExampleMiddleware::class);
 
-// Add middleware to a specific route
-$app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
-    // Route logic here
-})->add(new ExampleMiddleware());
-
 // Add middleware to a route group using dependency injection
 $app->group('/api', function (RouteGroup $group) { 
     // Define routes here
 })->add(ExampleMiddleware::class);
-
-// Add middleware to a route group
-$app->group('/api', function (RouteGroup $group) { 
-    // Define routes here
-})->add(new ExampleMiddleware());
 
 ```
 
